@@ -22,7 +22,7 @@ public abstract class Solid extends Element {
         if (this.y + 1 < SandboxPanel.GRID_HEIGHT) {
             if (SandboxPanel.grid[this.x][this.y + 1] instanceof Liquid
                     || SandboxPanel.grid[this.x][this.y + 1] instanceof Gas) {
-                return Action.MOVES;
+                return new Action(this.x, this.y, this.x, this.y + 1);
             }
 
             int randomNum = new Random().nextInt(2) * 2 - 1;
@@ -32,11 +32,7 @@ public abstract class Solid extends Element {
                     || SandboxPanel.grid[this.x + randomNum][this.y + 1] instanceof Gas)
                     && (SandboxPanel.grid[this.x + randomNum][this.y] instanceof Liquid
                     || SandboxPanel.grid[this.x + randomNum][this.y] instanceof Gas)) {
-                if (randomNum == -1) {
-                    return Action.MOVESW;
-                } else {
-                    return Action.MOVESE;
-                }
+                return new Action(this.x, this.y, this.x + randomNum, this.y + 1);
             }
             if (this.x - randomNum < SandboxPanel.GRID_WIDTH
                     && this.x - randomNum >= 0
@@ -44,15 +40,11 @@ public abstract class Solid extends Element {
                     || SandboxPanel.grid[this.x - randomNum][this.y + 1] instanceof Gas)
                     && (SandboxPanel.grid[this.x - randomNum][this.y] instanceof Liquid
                     || SandboxPanel.grid[this.x - randomNum][this.y] instanceof Gas)) {
-                if (randomNum == -1) {
-                    return Action.MOVESE;
-                } else {
-                    return Action.MOVESW;
-                }
+                return new Action(this.x, this.y, this.x - randomNum, this.y + 1);
             }
         }
 
-        return Action.STAY;
+        return null;
     }
 
 }

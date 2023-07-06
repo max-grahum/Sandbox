@@ -43,7 +43,7 @@ public abstract class Liquid extends Element {
             if (SandboxPanel.grid[this.x][this.y + 1] instanceof Gas
                     || (SandboxPanel.grid[this.x][this.y + 1] instanceof Liquid
                     && SandboxPanel.grid[this.x][this.y + 1].density < SandboxPanel.grid[this.x][this.y].density)) {
-                return Action.MOVES;
+                return new Action(this.x, this.y, this.x, this.y + 1);
             }
 
             //1 diagonal
@@ -55,11 +55,7 @@ public abstract class Liquid extends Element {
                     && (SandboxPanel.grid[this.x + randomNum][this.y + 1] instanceof Gas
                     || (SandboxPanel.grid[this.x + randomNum][this.y + 1] instanceof Liquid
                     && SandboxPanel.grid[this.x + randomNum][this.y + 1].density < SandboxPanel.grid[this.x][this.y].density))) {
-                if (randomNum == -1) {
-                    return Action.MOVESW;
-                } else {
-                    return Action.MOVESE;
-                }
+                return new Action(this.x, this.y, this.x + randomNum, this.y + 1);
             }
             if (this.x - randomNum < SandboxPanel.GRID_WIDTH
                     && this.x - randomNum >= 0
@@ -69,11 +65,7 @@ public abstract class Liquid extends Element {
                     && (SandboxPanel.grid[this.x - randomNum][this.y + 1] instanceof Gas
                     || (SandboxPanel.grid[this.x - randomNum][this.y + 1] instanceof Liquid
                     && SandboxPanel.grid[this.x - randomNum][this.y + 1].density < SandboxPanel.grid[this.x][this.y].density))) {
-                if (randomNum == -1) {
-                    return Action.MOVESE;
-                } else {
-                    return Action.MOVESW;
-                }
+                return new Action(this.x, this.y, this.x - randomNum, this.y + 1);
             }
         }
 
@@ -83,25 +75,17 @@ public abstract class Liquid extends Element {
                 && (SandboxPanel.grid[this.x + randomNum][this.y] instanceof Gas
                 || (SandboxPanel.grid[this.x + randomNum][this.y] instanceof Liquid
                 && SandboxPanel.grid[this.x + randomNum][this.y].density < SandboxPanel.grid[this.x][this.y].density))) {
-            if (randomNum == -1) {
-                return Action.MOVEW;
-            } else {
-                return Action.MOVEE;
-            }
+            return new Action(this.x, this.y, this.x + randomNum, this.y);
         }
         if (this.x - randomNum < SandboxPanel.GRID_WIDTH
                 && this.x - randomNum >= 0
                 && (SandboxPanel.grid[this.x - randomNum][this.y] instanceof Gas
                 || (SandboxPanel.grid[this.x - randomNum][this.y] instanceof Liquid
                 && SandboxPanel.grid[this.x - randomNum][this.y].density < SandboxPanel.grid[this.x][this.y].density))) {
-            if (randomNum == -1) {
-                return Action.MOVEE;
-            } else {
-                return Action.MOVEW;
-            }
+            return new Action(this.x, this.y, this.x - randomNum, this.y);
         }
 
-        return Action.STAY;
+        return null;
     }
 
 }

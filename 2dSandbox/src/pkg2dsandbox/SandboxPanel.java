@@ -31,9 +31,7 @@ public class SandboxPanel extends JPanel implements ActionListener, MouseListene
     private int mouseX, mouseY;
     private boolean mouseDown = false;
 
-    public static String selected = "barrier";
-
-    private Random rand;
+    public static String selected = "sand";
 
     public static Element[][] grid;
     public static Element[][] next;
@@ -48,7 +46,6 @@ public class SandboxPanel extends JPanel implements ActionListener, MouseListene
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
 
-        this.rand = new Random();
         this.grid = new Element[GRID_WIDTH][GRID_HEIGHT];
         this.next = new Element[GRID_WIDTH][GRID_HEIGHT];
         this.actionRequests = new ArrayList<>();
@@ -90,127 +87,30 @@ public class SandboxPanel extends JPanel implements ActionListener, MouseListene
             for (int j = 0; j < GRID_HEIGHT; j++) {
 
                 this.actionBuffer.clear();
-
-                if (i - 1 >= 0 && j - 1 >= 0) {
-                    if (this.actionRequests.get(i - 1).get(j - 1).equals(Action.MOVESE)) {
-                        this.actionBuffer.add(Action.MOVESE);
+                for (int xOff = -1; xOff < 2; xOff++) {
+                    for (int yOff = -1; yOff < 2; yOff++) {
+                        if (i + xOff >= 0 && i + xOff < this.GRID_WIDTH
+                                && j + yOff >= 0 && j + yOff < this.GRID_HEIGHT) {
+                            Action action = this.actionRequests.get(i + xOff).get(j + yOff);
+                            if (action != null) {
+                                if (action.destinedFor(i, j)) {
+                                    this.actionBuffer.add(action);
+                                }
+                            }
+                        }
                     }
                 }
-                if (j - 1 >= 0) {
-                    if (this.actionRequests.get(i).get(j - 1).equals(Action.MOVES)) {
-                        this.actionBuffer.add(Action.MOVES);
-                    }
+
+                if (this.actionBuffer.size() > 0) {
+                    int randomNum = new Random().nextInt(this.actionBuffer.size());
+                    this.actionBuffer.get(randomNum).act();
                 }
-                if (i + 1 < GRID_WIDTH && j - 1 >= 0) {
-                    if (this.actionRequests.get(i + 1).get(j - 1).equals(Action.MOVESW)) {
-                        this.actionBuffer.add(Action.MOVESW);
-                    }
-                }
-                if (i + 1 < GRID_WIDTH) {
-                    if (this.actionRequests.get(i + 1).get(j).equals(Action.MOVEW)) {
-                        this.actionBuffer.add(Action.MOVEW);
-                    }
-                }
-                if (i + 1 < GRID_WIDTH && j + 1 < GRID_HEIGHT) {
-                    if (this.actionRequests.get(i + 1).get(j + 1).equals(Action.MOVENW)) {
-                        this.actionBuffer.add(Action.MOVENW);
-                    }
-                }
-                if (j + 1 < GRID_HEIGHT) {
-                    if (this.actionRequests.get(i).get(j + 1).equals(Action.MOVEN)) {
-                        this.actionBuffer.add(Action.MOVEN);
-                    }
-                }
-                if (i - 1 >= 0 && j + 1 < GRID_HEIGHT) {
-                    if (this.actionRequests.get(i - 1).get(j + 1).equals(Action.MOVENE)) {
-                        this.actionBuffer.add(Action.MOVENE);
-                    }
-                }
-                if (i - 1 >= 0) {
-                    if (this.actionRequests.get(i - 1).get(j).equals(Action.MOVEE)) {
-                        this.actionBuffer.add(Action.MOVEE);
-                    }
-                }
-                if (this.actionBuffer.size() <= 0) {
-                    this.actionBuffer.add(Action.NOOP);
-                }
-
-                int randomNum = new Random().nextInt(this.actionBuffer.size());
-                switch (this.actionBuffer.get(randomNum)) {
-                    case MOVES:
-                        this.next[i][j - 1] = this.grid[i][j].clone();
-                        this.next[i][j - 1].y--;
-                        this.next[i][j] = this.grid[i][j - 1].clone();
-                        this.next[i][j].y++;
-                        break;
-
-                    case MOVESE:
-                        this.next[i - 1][j - 1] = this.grid[i][j].clone();
-                        this.next[i - 1][j - 1].y--;
-                        this.next[i - 1][j - 1].x--;
-                        this.next[i][j] = this.grid[i - 1][j - 1].clone();
-                        this.next[i][j].y++;
-                        this.next[i][j].x++;
-                        break;
-
-                    case MOVESW:
-                        this.next[i + 1][j - 1] = this.grid[i][j].clone();
-                        this.next[i + 1][j - 1].y--;
-                        this.next[i + 1][j - 1].x++;
-                        this.next[i][j] = this.grid[i + 1][j - 1].clone();
-                        this.next[i][j].y++;
-                        this.next[i][j].x--;
-                        break;
-
-                    case MOVEE:
-                        this.next[i - 1][j] = this.grid[i][j].clone();
-                        this.next[i - 1][j].x--;
-                        this.next[i][j] = this.grid[i - 1][j].clone();
-                        this.next[i][j].x++;
-                        break;
-
-                    case MOVEW:
-                        this.next[i + 1][j] = this.grid[i][j].clone();
-                        this.next[i + 1][j].x++;
-                        this.next[i][j] = this.grid[i + 1][j].clone();
-                        this.next[i][j].x--;
-                        break;
-
-                    case MOVEN:
-                        this.next[i][j + 1] = this.grid[i][j].clone();
-                        this.next[i][j + 1].y++;
-                        this.next[i][j] = this.grid[i][j + 1].clone();
-                        this.next[i][j].y--;
-                        break;
-
-                    case MOVENE:
-                        this.next[i - 1][j + 1] = this.grid[i][j].clone();
-                        this.next[i - 1][j + 1].y++;
-                        this.next[i - 1][j + 1].x--;
-                        this.next[i][j] = this.grid[i - 1][j + 1].clone();
-                        this.next[i][j].y--;
-                        this.next[i][j].x++;
-                        break;
-
-                    case MOVENW:
-                        this.next[i + 1][j + 1] = this.grid[i][j].clone();
-                        this.next[i + 1][j + 1].y++;
-                        this.next[i + 1][j + 1].x++;
-                        this.next[i][j] = this.grid[i + 1][j + 1].clone();
-                        this.next[i][j].y--;
-                        this.next[i][j].x--;
-                        break;
-
-                    case STAY:
-                        break;
-                }
-
             }
         }
 
         for (int i = 0; i < GRID_WIDTH; i++) {
             for (int j = 0; j < GRID_HEIGHT; j++) {
-                this.grid[i][j] = this.next[i][j];
+                this.grid[i][j] = this.next[i][j].clone();
             }
         }
     }

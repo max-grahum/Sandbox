@@ -11,7 +11,7 @@ public abstract class Gas extends Element {
 
     @Override
     public Action update() {
-        return Action.STAY;
+        return null;
     }
 
 }
